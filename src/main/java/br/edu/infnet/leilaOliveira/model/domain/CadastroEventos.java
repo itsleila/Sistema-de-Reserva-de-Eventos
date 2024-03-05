@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public class CadastroEventos {
 
+	private int id;
 	private String nomeEvento;
 	private String descricao;
 	private String local;
@@ -12,33 +13,62 @@ public class CadastroEventos {
 	private int maxCapacidade;
 	private double precoIngresso;
 	private LocalDate data;
-    private LocalTime horario;
+	private LocalTime horario;
+
+	public CadastroEventos() {}
 	
-	
-	public CadastroEventos() {
-		
+	public CadastroEventos(int id, String nomeEvento) 
+	{
+		this.id = id;
+		this.nomeEvento = nomeEvento;
+
 	}
 	
-	 public CadastroEventos(String nomeEvento, String local, String descricao, int qtdConvidados, int maxCapacidade, double precoIngresso, LocalDate data, LocalTime horario) {
-	        this.nomeEvento = nomeEvento;
-	        this.local = local;
-	        this.descricao = descricao;
-	        this.qtdConvidados = qtdConvidados;
-	        this.maxCapacidade = maxCapacidade;
-	        this.precoIngresso = precoIngresso;
-	        this.data = data;
-	        this.horario = horario;
+	
+
+	public CadastroEventos(int id,String nomeEvento, String local, String descricao, int qtdConvidados, int maxCapacidade,
+			double precoIngresso, LocalDate data, LocalTime horario) {
+		this.id = id;
+		this.nomeEvento = nomeEvento;
+		this.local = local;
+		this.descricao = descricao;
+		this.qtdConvidados = qtdConvidados;
+		this.maxCapacidade = maxCapacidade;
+		this.precoIngresso = precoIngresso;
+		this.data = data;
+		this.horario = horario;
+	}
+
+	public void capacidadeMax() {
+		if (qtdConvidados > maxCapacidade && maxCapacidade > 0) {
+			throw new IllegalStateException("Capacidade máxima do evento excedida");
+		}
+	}
+
+	public void validarPrecoIngresso() {
+		if (precoIngresso <= 0.0) {
+			throw new IllegalStateException("Preço do ingresso inválido");
+		}
+	}
+
+	public double calcularReceitaEvento() throws IllegalStateException {
+		capacidadeMax();
+		validarPrecoIngresso();
+		return qtdConvidados * precoIngresso;
+	}
+
+	public boolean validarDataHorarioEvento() {
+	    LocalDate hoje = LocalDate.now();
+	    LocalTime agora = LocalTime.now();
+
+	    if (data == null || data.isBefore(hoje)) {
+	        return false;
 	    }
-	 
-	 public double calcularReceitaEvento() {
-		 if (qtdConvidados > maxCapacidade && maxCapacidade > 0) {
-		        throw new IllegalStateException("Capacidade máxima do evento excedida");
-		    }if (precoIngresso <= 0.0) {
-		        return 0.0; 
-		    }
-	        return qtdConvidados * precoIngresso;
-	        
+	    if (horario == null || horario.isBefore(agora)) { 
+	        return false;
 	    }
+	    return true;
+	}
 
 	public String getNomeEvento() {
 		return nomeEvento;
@@ -79,7 +109,16 @@ public class CadastroEventos {
 	public void setMaxCapacidade(int maxCapacidade) {
 		this.maxCapacidade = maxCapacidade;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
+
 	public double getPrecoIngresso() {
 		return precoIngresso;
 	}
@@ -106,10 +145,8 @@ public class CadastroEventos {
 
 	@Override
 	public String toString() {
-        return "Nome do Evento: " + nomeEvento + "\nDescrição: " + descricao+ "\nPreço do ingresso: " + precoIngresso + "\nLocal: " + local + "\nData: "
-                + data + "\nHorário: " + horario;
+		return "Nome do Evento: " + nomeEvento + "\nDescrição: " + descricao + "\nPreço do ingresso: " + precoIngresso
+				+ "\nLocal: " + local + "\nData: " + data + "\nHorário: " + horario;
 	}
-	 
-	 
-	 
+
 }

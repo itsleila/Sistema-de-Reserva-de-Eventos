@@ -1,8 +1,14 @@
 package br.edu.infnet.leilaOliveira;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+//import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -11,52 +17,123 @@ import br.edu.infnet.leilaOliveira.model.domain.CadastroEventos;
 @SpringBootTest
 public class CadastroEventoTest {
 
+	CadastroEventos eventoTeste = new CadastroEventos();                   
+	
+	//@BeforeEach
+	//void setUp() {}
+	
 	 @Test
-	    void testCalcularReceitaEvento() {
-	        CadastroEventos ev1 = new CadastroEventos();
-	        ev1.setNomeEvento("PoolParty !! ");
-	        ev1.setQtdConvidados(50);
-	        ev1.setPrecoIngresso(25.0);
-	        assertEquals(1250.0, ev1.calcularReceitaEvento());
+	    void calcularReceitaEvento() {
+		  eventoTeste.setQtdConvidados(50);
+		  eventoTeste.setPrecoIngresso(25.0);
+	      assertEquals(1250.0, eventoTeste.calcularReceitaEvento());
 	     }
 	 
-	 void testPrecoIngressoNaoDefinido() {
-	        CadastroEventos ev2 = new CadastroEventos();
-	        ev2.setNomeEvento("Lançamento nova melissa");
-	        ev2.setMaxCapacidade(60);
-	        ev2.setQtdConvidados(50);
-	        assertEquals(0.0, ev2.calcularReceitaEvento());
-	    }
+	 //////////////////
 	 
 	 @Test
-	    void testMaxCapacidade() {
-	        CadastroEventos ev3= new CadastroEventos();
-	        ev3.setNomeEvento("Bienal do livro.");
-	        ev3.setMaxCapacidade(100);
-	        ev3.setPrecoIngresso(50.0);
-	        ev3.setQtdConvidados(110);  
-	        assertThrows(IllegalStateException.class, () -> ev3.calcularReceitaEvento());
+	    void capacidadeMax() {
+	        eventoTeste.setMaxCapacidade(100);
+	        eventoTeste.setQtdConvidados(110);   
+	        assertThrows(IllegalStateException.class, eventoTeste::capacidadeMax); 
 	    }
+	 /////////////////////
 	 
 	 @Test
-	    void testPrecoIngressoZero() {
-	        CadastroEventos ev4 = new CadastroEventos();
-	        ev4.setNomeEvento("Aniversario da Alice!");
-	        ev4.setMaxCapacidade(120);
-	        ev4.setQtdConvidados(50);
-	        ev4.setPrecoIngresso(0.0);
-	        assertEquals(0.0, ev4.calcularReceitaEvento());
+	    void precoIngressoZero() {
+	        eventoTeste.setPrecoIngresso(0.0);
+	        assertThrows(IllegalStateException.class, eventoTeste::validarPrecoIngresso);
 	    }
-
+	 /////////////
+	 @Test
+	    void precoIngressoNegativo() {
+	        eventoTeste.setPrecoIngresso(-10.0);
+	        assertThrows(IllegalStateException.class, eventoTeste::validarPrecoIngresso);
+	    }
+	    
+	    ///////////
 	    @Test
-	    void testPrecoIngressoNegativo() {
-	        CadastroEventos ev5= new CadastroEventos();
-	        ev5.setNomeEvento("La Revolution");
-	        ev5.setMaxCapacidade(100);
-	        ev5.setPrecoIngresso(-10.0);
-	        ev5.setQtdConvidados(50);
-	        assertEquals(0.0, ev5.calcularReceitaEvento());
+	    void dataHorarioValidos() {
+	        LocalDate dataFutura = LocalDate.now().plusDays(1);
+	        LocalTime horarioFuturo = LocalTime.now().plusHours(1);
+	        eventoTeste.setData(dataFutura);
+	        eventoTeste.setHorario(horarioFuturo);
+	        assertTrue(eventoTeste.validarDataHorarioEvento());
 	    }
+	    
+	    //////////////// 
+	    @Test
+	    void dataFuturaHorarioPassado() {
+	        LocalDate dataFutura = LocalDate.now().plusDays(1);
+	        LocalTime horarioPassado = LocalTime.now().minusHours(1);
+	        eventoTeste.setData(dataFutura);
+	        eventoTeste.setHorario(horarioPassado);
+	        
+	        assertFalse(eventoTeste.validarDataHorarioEvento());
+	    }
+	    
+	    //////////
+	    @Test
+	    void dataNula() {
+	        eventoTeste.setHorario(LocalTime.now());
 
+	        
+	        assertFalse(eventoTeste.validarDataHorarioEvento());
+	    }
+	    /////////
+	    @Test
+	    void horarioNulo() {
+	    	eventoTeste.setData(LocalDate.now().plusDays(1));
+
+	    	assertFalse(eventoTeste.validarDataHorarioEvento());
+	    }
+	    //////////
+	    @Test
+	    void dataPassada() {
+	    	eventoTeste.setData(LocalDate.now().minusDays(1));
+	        eventoTeste.setHorario(LocalTime.now());
+
+	        assertFalse(eventoTeste.validarDataHorarioEvento());
+	    }
+	    //////////
+	  
+	    @Test
+	    void horarioPassado() {
+	        LocalDate dataFutura = LocalDate.now().plusDays(1);
+	        LocalTime horarioPassado = LocalTime.now().minusHours(1);
+	        eventoTeste.setData(dataFutura);
+	        eventoTeste.setHorario(horarioPassado);
+
+	        assertFalse(eventoTeste.validarDataHorarioEvento());
+	    }
+	    
+	    
+	    
+	    
+	    ////////
+	    @Test
+	    void validarGets() {
+	    	int id = 111222333;
+	        String nomeEvento = "Bienal do Livro.";
+	        String local = "Distrito Anhembi";
+	        String descricao = "Evento literário e cultural, para promover o lançamento de obras e debates sobre temas pertinentes.";
+	        int qtdConvidados = 500;
+	        int maxCapacidade = 1000;
+	        double precoIngresso = 25.0;
+	        LocalDate data = LocalDate.of(2024, 3, 15);
+	        LocalTime horario = LocalTime.of(11, 0);
+
+	        CadastroEventos evento = new CadastroEventos(id,nomeEvento, local, descricao, qtdConvidados, maxCapacidade, precoIngresso, data, horario);
+
+	        assertEquals(id, evento.getId());
+	        assertEquals(nomeEvento, evento.getNomeEvento());
+	        assertEquals(local, evento.getLocal());
+	        assertEquals(descricao, evento.getDescricao());
+	        assertEquals(qtdConvidados, evento.getQtdConvidados());
+	        assertEquals(maxCapacidade, evento.getMaxCapacidade());
+	        assertEquals(precoIngresso, evento.getPrecoIngresso());
+	        assertEquals(data, evento.getData());
+	        assertEquals(horario, evento.getHorario());
+	    }
 	 
 }

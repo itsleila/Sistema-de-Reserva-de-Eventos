@@ -1,17 +1,21 @@
 package br.edu.infnet.leilaOliveira;
-
-
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+
 import br.edu.infnet.leilaOliveira.model.domain.CadastroEventos;
 
-public class CadastroEventoMain {
-	public static void main(String[] args) {
+@Component
+public class CadastroEventoMain implements ApplicationRunner {
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+	CadastroEventos evento1 = new CadastroEventos();	
 		
-		CadastroEventos evento1 = new CadastroEventos();	
-		
+		  evento1.setId(123456);
 		  evento1.setNomeEvento("Ano do Dragão!!");
 	      evento1.setLocal("Bairro Chinatown , Nº 398");
 	      evento1.setDescricao("Comemoração do ano novo chines");
@@ -24,6 +28,5 @@ public class CadastroEventoMain {
 	      System.out.println(evento1);
 	      System.out.println("Receita total do evento: R$" + evento1.calcularReceitaEvento());
 		
-	
- }
+	}
 }
